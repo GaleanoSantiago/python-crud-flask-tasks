@@ -9,6 +9,47 @@ form.addEventListener('submit',  (e) => {
     form.reset(); // Resetear los valores de los inputs
 });
 
+const obtenerDatos = () => {
+    fetch('http://localhost:5000/tareas')
+        .then(response => response.json())
+        .then(data => {
+            mostrarDatosEnTabla(data);
+            console.log(data);
+        })
+        .catch(error => {
+            console.log('Error al obtener las tareas:', error);
+        });
+}
+
+const mostrarDatosEnTabla = (data) => {
+    const bodyTable = document.getElementById("body-table");
+
+    // Limpiar contenido existente en la tabla
+    bodyTable.innerHTML = "";
+
+    // Recorrer los datos y agregar filas a la tabla
+    data.forEach(item => {
+        const row = document.createElement("tr");
+
+        // Crear celdas y asignar valores
+        const idCell = document.createElement("td");
+        idCell.textContent = item.codigo;
+        console.log(item.codigo);
+        row.appendChild(idCell);
+
+        const descripcionCell = document.createElement("td");
+        descripcionCell.textContent = item.descripcion;
+        row.appendChild(descripcionCell);
+
+        const completadaCell = document.createElement("td");
+        completadaCell.textContent = item.done ? "Si" : "No";
+        row.appendChild(completadaCell);
+
+        // Agregar la fila a la tabla
+        bodyTable.appendChild(row);
+    });
+}
+
 
 const enviarDatos = () => {
     let descripcion = document.getElementById('descripcion').value;
@@ -41,3 +82,6 @@ const enviarDatos = () => {
             console.log('Error en la solicitud:', error);
         });
 }
+
+
+obtenerDatos();
