@@ -1,5 +1,7 @@
 // ----- Formulario dar de Alta----------
 const form = document.getElementById('myForm');
+// ----- Boton para editar el contenido de la tarea -----
+const btnEditForm = document.getElementById("btnEdit");
 
 form.addEventListener('submit',  (e) => {
     e.preventDefault(); // Evitar que la página se actualice
@@ -22,7 +24,6 @@ const obtenerDatos = () => {
 
 const mostrarDatosEnTabla = (data) => {
     const bodyTable = document.getElementById("body-table");
-
     // Limpiar contenido existente en la tabla
     bodyTable.innerHTML = "";
 
@@ -66,6 +67,17 @@ const mostrarDatosEnTabla = (data) => {
         form.appendChild(submitButton);
         formCell.appendChild(form);
         row.appendChild(formCell);
+
+        //Boton para editar
+        const editCell = document.createElement("td");
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent="Editar";
+        btnEdit.value= item.codigo;
+        btnEdit.classList.add("btn");
+        btnEdit.classList.add("btn-primary");
+        btnEdit.classList.add("btn-edit");
+        editCell.appendChild(btnEdit);
+        row.appendChild(editCell);
 
         // Agregar la fila a la tabla
         bodyTable.appendChild(row);
@@ -128,9 +140,61 @@ const mostrarDatosEnTabla = (data) => {
                 });
         });
     }
+
+    // Boton para Editar el contenido de la tarea
+    const btnEditList = document.querySelectorAll(".btn-edit");
+    for (let i = 0; i < btnEditList.length; i++) {
+        btnEditList[i].addEventListener("click", ()=>{
+            // console.log(data[i].codigo);
+            // console.log(data[i].descripcion);
+            // console.log(data[i].done);
+            editarDatos(data[i]);
+        })
+    }
+
 }
 
+// Para mostrar los datos en el formulario de editar
+const editarDatos = (item) =>{
+    let descripcion = document.getElementById('descripcionEdit');
+    let done = document.getElementById('doneEdit');
+    let id = document.getElementById("idEdit");
+    id.value=item.codigo;
+    descripcion.value=item.descripcion;
+    done.checked = item.done;
+}
 
+btnEditForm.addEventListener("click", ()=>{
+    let id = document.getElementById("idEdit").value;
+    let descripcion = document.getElementById('descripcionEdit').value;
+    let done = document.getElementById('doneEdit').checked;
+    // console.log(id);
+    // console.log(done);
+    const url = `http://localhost:5000/tareas/edit/${id}`;
+    const data = {
+        descripcion: descripcion,
+        done: done
+    };
+    fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('Tarea modificada correctamente');
+        } else {
+            console.error('Error al modificar la tarea');
+        }
+    })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+        });
+
+})
+// funcion para enviar los datos
 const enviarDatos = () => {
     let descripcion = document.getElementById('descripcion').value;
     let done = document.getElementById('done').checked;

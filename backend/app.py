@@ -10,8 +10,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Variables para el uso local y online
+ruta_local = 'F:/usuarios/alumno/Escritorio/Curso-JavaScript/python-crud/backend/pruebas.db'
+ruta_online = 'pruebas.db'
+
 # Nombre del archivo que contiene la base de datos.
-DATABASE = 'F:/usuarios/alumno/Escritorio/Curso-JavaScript/python-crud/backend/pruebas.db'
+DATABASE = ruta_local
 
 #----------------------------------------------
 # Conectamos con la base de datos. 
@@ -113,7 +117,7 @@ def alta_tarea():
 # Modifica los datos de una tarea a partir
 # de su código.
 #----------------------------------------------
-# @app.route('/tareas/<int:tarea_id>', methods=['PUT'])
+@app.route('/tareas/edit/<int:tarea_id>', methods=['PUT'])
 def modificar_tarea(tarea_id):
     data = request.get_json()
     if 'descripcion' not in data or 'done' not in data:
@@ -136,7 +140,9 @@ def modificar_tarea(tarea_id):
         return jsonify({'error': 'Error al modificar la tarea'}), 500
 
 
-# Version 2
+#----------------------------------------------
+# Boton para completar tarea
+#----------------------------------------------
 
 @app.route('/tareas/<int:tarea_id>', methods=['PUT'])
 def actualizar_tarea(tarea_id):
@@ -165,7 +171,7 @@ def actualizar_tarea(tarea_id):
 
 
 #----------------------------------------------
-# Modifica los datos de una tarea a partir
+# Eliminar una tarea a partir
 # de su código.
 #----------------------------------------------
 @app.route('/tareas/<int:codigo>', methods=['POST'])
@@ -185,36 +191,6 @@ def eliminar_tarea(codigo):
     except Exception as e:
         print(f"Error al consultar la tarea: {str(e)}")
         return jsonify({'error': 'Error al consultar la tarea'}), 500
-
-
-def agregar_tarea(desc, done):
-    try:
-        conn = conectar()
-        cursor = conn.cursor()
-        cursor.execute("""
-                        INSERT INTO tareas(descripcion, done)
-                        VALUES(?, ?)""",
-                        (desc, done)
-                        )
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print("Tarea agregada exitosamente.")
-    except sqlite3.Error as e:
-        print("Error al agregar la tarea:", e)
-
-def eliminar_tarea(tarea_id):
-    try:
-        conn = conectar()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM tareas WHERE tarea_id = ?", (tarea_id,))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print("Tarea eliminada de la base de datos")
-    except sqlite3.Error as e:
-        print("Error al eliminar tarea:", e)
-
 
 #----------------------------------------------
 # Ejecutamos la app
