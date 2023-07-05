@@ -113,7 +113,7 @@ def alta_tarea():
 # Modifica los datos de una tarea a partir
 # de su código.
 #----------------------------------------------
-@app.route('/tareas/<int:tarea_id>', methods=['PUT'])
+# @app.route('/tareas/<int:tarea_id>', methods=['PUT'])
 def modificar_tarea(tarea_id):
     data = request.get_json()
     if 'descripcion' not in data or 'done' not in data:
@@ -134,6 +134,35 @@ def modificar_tarea(tarea_id):
             return jsonify({'mensaje': 'Tarea modificada correctamente'}), 200
     except:
         return jsonify({'error': 'Error al modificar la tarea'}), 500
+
+
+# Version 2
+
+@app.route('/tareas/<int:tarea_id>', methods=['PUT'])
+def actualizar_tarea(tarea_id):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        # Obtener el valor actual de done
+        cursor.execute("SELECT done FROM tareas WHERE tarea_id = ?", (tarea_id,))
+        resultado = cursor.fetchone()
+        if resultado is None:
+            return jsonify({'error': 'Tarea no encontrada'}), 404
+        
+        done_actual = resultado['done']
+        # Calcular el nuevo valor inverso de done
+        done_nuevo = 1 if done_actual == 0 else 0
+        
+        # Actualizar el valor de done en la base de datos
+        cursor.execute("UPDATE tareas SET done = ? WHERE tarea_id = ?", (done_nuevo, tarea_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': 'Valor de done actualizado correctamente'})
+    except Exception as e:
+        return jsonify({'error': f'Error al actualizar la tarea: {str(e)}'}), 500
+
 
 #----------------------------------------------
 # Modifica los datos de una tarea a partir

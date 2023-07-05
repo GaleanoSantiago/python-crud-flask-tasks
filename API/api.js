@@ -41,17 +41,21 @@ const mostrarDatosEnTabla = (data) => {
         row.appendChild(descripcionCell);
 
         const completadaCell = document.createElement("td");
-        completadaCell.textContent = item.done ? "Si" : "No";
+        const btnDone = document.createElement("button");
+        btnDone.textContent = item.done ? "Completada" : "No Completada";
+        btnDone.classList.add(item.done ? "btn-done" : "btn-dontDone");
+        btnDone.classList.add("btnActualizar");
+        btnDone.value= item.codigo;
+        completadaCell.appendChild(btnDone);
         row.appendChild(completadaCell);
 
-        
+
         const formCell = document.createElement("td");
         const form = document.createElement("form");
         form.action = `http://localhost:5000/tareas/${item.codigo}`;
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = "tarea_id";
-        input.value = item.codigo;
         form.appendChild(input);
         const submitButton = document.createElement("button");
         submitButton.type = "submit";
@@ -76,21 +80,52 @@ const mostrarDatosEnTabla = (data) => {
 
             // Realizar la solicitud POST mediante Fetch
             fetch(form.action, {
-                method: "POST",
-                body: new FormData(form)
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("Registro eliminado correctamente");
-                    // Realizar alguna acción adicional si deseas
-                } else {
-                    console.error("Error al eliminar el registro");
-                }
-            })
-            .catch(error => {
-                console.error("Error en la solicitud:", error);
-            });
+                    method: "POST",
+                    body: new FormData(form)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Registro eliminado correctamente");
+                        // Realizar alguna acción adicional si deseas
+                    } else {
+                        console.error("Error al eliminar el registro");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error en la solicitud:", error);
+                });
+
+        });
+    }
+
+    // Obtenemos los botones para actualizar el valor done de las tareas
+    const btnDoneList = document.querySelectorAll(".btnActualizar");
+
+    for (let i = 0; i < btnDoneList.length; i++) {
+        btnDoneList[i].addEventListener("click", () => {
+            // console.log(btnDoneList[i].value);
             
+            // Objeto de configuración de la solicitud
+            const options = {
+                method: 'PUT',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) // Cuerpo vacío, ya que no se envían datos adicionales
+            };
+            // Realizar la solicitud PUT mediante Fetch
+            fetch(`http://localhost:5000/tareas/${btnDoneList[i].value}`, options)
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Valor de done actualizado correctamente');
+                    
+                    } else {
+                        console.error('Error al actualizar el valor de done');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud:', error);
+                });
         });
     }
 }
