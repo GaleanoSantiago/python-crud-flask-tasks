@@ -135,6 +135,28 @@ def modificar_tarea(tarea_id):
     except:
         return jsonify({'error': 'Error al modificar la tarea'}), 500
 
+#----------------------------------------------
+# Modifica los datos de una tarea a partir
+# de su código.
+#----------------------------------------------
+@app.route('/tareas/<int:codigo>', methods=['POST'])
+def eliminar_tarea(codigo):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("""DELETE FROM tareas WHERE tarea_id = ?""", (codigo,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({
+            'codigo': codigo,
+            'descripcion': 'Tarea eliminada exitosamente.',
+            'done': 0
+        })
+    except Exception as e:
+        print(f"Error al consultar la tarea: {str(e)}")
+        return jsonify({'error': 'Error al consultar la tarea'}), 500
+
 
 def agregar_tarea(desc, done):
     try:
