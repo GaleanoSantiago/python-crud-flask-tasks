@@ -91,27 +91,33 @@ const mostrarDatosEnTabla = (data) => {
     for (let i = 0; i < btnDeleteList.length; i++) {
         btnDeleteList[i].addEventListener("click", (event) => {
             event.preventDefault(); // Evitar el envío por defecto del formulario
-            const form = event.target.closest("form");
 
-            // Realizar la solicitud POST mediante Fetch
-            fetch(form.action, {
-                    method: "POST",
-                    body: new FormData(form)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Registro eliminado correctamente");
-                        // Realizar alguna acción adicional si deseas
-                    } else {
-                        console.error("Error al eliminar el registro");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error en la solicitud:", error);
-                });
+            // Mostrar ventana de confirmación
+            const confirmDelete = confirm("¿Estás seguro de que deseas eliminar esta tarea?");
 
+            if (confirmDelete) {
+                const form = event.target.closest("form");
+
+                // Realizar la solicitud POST mediante Fetch
+                fetch(form.action, {
+                        method: "POST",
+                        body: new FormData(form)
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Registro eliminado correctamente");
+                            // Realizar alguna acción adicional si deseas
+                        } else {
+                            console.error("Error al eliminar el registro");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error en la solicitud:", error);
+                    });
+            }
         });
     }
+
 
     // Obtenemos los botones para actualizar el valor done de las tareas
     const btnDoneList = document.querySelectorAll(".btnActualizar");
@@ -197,6 +203,14 @@ btnEditForm.addEventListener("click", ()=>{
         });
 
 })
+
+// Para el boton reset del form de modificar tareas
+document.getElementById("btnReset").addEventListener("click", () => {
+    document.getElementById("idEdit").value = "";
+    document.getElementById("descripcionEdit").value = "";
+    document.getElementById("doneEdit").checked = false;
+});
+
 // funcion para enviar los datos
 const enviarDatos = () => {
     let descripcion = document.getElementById('descripcion').value;
