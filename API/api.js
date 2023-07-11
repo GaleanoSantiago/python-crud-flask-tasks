@@ -6,7 +6,7 @@ const btnEditForm = document.getElementById("btnEdit");
 const rutaLocal = 'http://localhost:5000/tareas';
 const rutaOnline = 'https://galeanosantiago.pythonanywhere.com/tareas';
 
-form.addEventListener('submit',  (e) => {
+form.addEventListener('submit',  (e)=>{
     e.preventDefault(); // Evitar que la página se actualice
     enviarDatos();
     // console.log("enviado");
@@ -152,12 +152,18 @@ const mostrarDatosEnTabla = (data) => {
 
     // Boton para Editar el contenido de la tarea
     const btnEditList = document.querySelectorAll(".btn-edit");
+    // Formulario de envio de datos modificados
+    const formulario = document.querySelector(".form-editar");
     for (let i = 0; i < btnEditList.length; i++) {
         btnEditList[i].addEventListener("click", ()=>{
-            // console.log(data[i].codigo);
-            // console.log(data[i].descripcion);
-            // console.log(data[i].done);
+            
             editarDatos(data[i]);
+            // Para activar el efecto de sombreado azul del formulario
+            formulario.classList.add("activado");
+            // Despues de un segundo la clase se elimina
+            setTimeout( ()=> {
+                formulario.classList.remove("activado");
+            }, 1000);
         })
     }
 
