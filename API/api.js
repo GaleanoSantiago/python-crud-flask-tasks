@@ -2,6 +2,9 @@
 const form = document.getElementById('myForm');
 // ----- Boton para editar el contenido de la tarea -----
 const btnEditForm = document.getElementById("btnEdit");
+// ------------ Variables para las rutas -------------
+const rutaLocal = 'http://localhost:5000/tareas';
+const rutaOnline = 'https://galeanosantiago.pythonanywhere.com/tareas';
 
 form.addEventListener('submit',  (e) => {
     e.preventDefault(); // Evitar que la página se actualice
@@ -11,7 +14,7 @@ form.addEventListener('submit',  (e) => {
 });
 
 const obtenerDatos = () => {
-    fetch('http://localhost:5000/tareas')
+    fetch(rutaLocal)
         .then(response => response.json())
         .then(data => {
             mostrarDatosEnTabla(data);
@@ -53,7 +56,7 @@ const mostrarDatosEnTabla = (data) => {
 
         const formCell = document.createElement("td");
         const form = document.createElement("form");
-        form.action = `http://localhost:5000/tareas/${item.codigo}`;
+        form.action = `${rutaLocal}/${item.codigo}`;
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = "tarea_id";
@@ -88,27 +91,33 @@ const mostrarDatosEnTabla = (data) => {
     for (let i = 0; i < btnDeleteList.length; i++) {
         btnDeleteList[i].addEventListener("click", (event) => {
             event.preventDefault(); // Evitar el envío por defecto del formulario
-            const form = event.target.closest("form");
 
-            // Realizar la solicitud POST mediante Fetch
-            fetch(form.action, {
-                    method: "POST",
-                    body: new FormData(form)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log("Registro eliminado correctamente");
-                        // Realizar alguna acción adicional si deseas
-                    } else {
-                        console.error("Error al eliminar el registro");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error en la solicitud:", error);
-                });
+            // Mostrar ventana de confirmación
+            const confirmDelete = confirm("¿Estás seguro de que deseas eliminar esta tarea?");
 
+            if (confirmDelete) {
+                const form = event.target.closest("form");
+
+                // Realizar la solicitud POST mediante Fetch
+                fetch(form.action, {
+                        method: "POST",
+                        body: new FormData(form)
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Registro eliminado correctamente");
+                            // Realizar alguna acción adicional si deseas
+                        } else {
+                            console.error("Error al eliminar el registro");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error en la solicitud:", error);
+                    });
+            }
         });
     }
+
 
     // Obtenemos los botones para actualizar el valor done de las tareas
     const btnDoneList = document.querySelectorAll(".btnActualizar");
@@ -126,7 +135,7 @@ const mostrarDatosEnTabla = (data) => {
                 body: JSON.stringify({}) // Cuerpo vacío, ya que no se envían datos adicionales
             };
             // Realizar la solicitud PUT mediante Fetch
-            fetch(`http://localhost:5000/tareas/${btnDoneList[i].value}`, options)
+            fetch(`${rutaLocal}/${btnDoneList[i].value}`, options)
                 .then(response => {
                     if (response.ok) {
                         console.log('Valor de done actualizado correctamente');
@@ -170,7 +179,7 @@ btnEditForm.addEventListener("click", ()=>{
     let done = document.getElementById('doneEdit').checked;
     // console.log(id);
     // console.log(done);
-    const url = `http://localhost:5000/tareas/edit/${id}`;
+    const url = `${rutaLocal}/edit/${id}`;
     const data = {
         descripcion: descripcion,
         done: done
@@ -194,6 +203,14 @@ btnEditForm.addEventListener("click", ()=>{
         });
 
 })
+
+// Para el boton reset del form de modificar tareas
+document.getElementById("btnReset").addEventListener("click", () => {
+    document.getElementById("idEdit").value = "";
+    document.getElementById("descripcionEdit").value = "";
+    document.getElementById("doneEdit").checked = false;
+});
+
 // funcion para enviar los datos
 const enviarDatos = () => {
     let descripcion = document.getElementById('descripcion').value;
@@ -204,7 +221,7 @@ const enviarDatos = () => {
         done: done
     };
 
-    fetch('http://localhost:5000/tareas', {
+    fetch(rutaLocal, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
