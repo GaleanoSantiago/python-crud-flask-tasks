@@ -1,1 +1,1 @@
-Aplicación web de tareas hecho con python flask y msqlite. Se ejecuta el app.py de /backend primero y despues se abre el /frontend/index.html desde un servidor, que puede ser local o no. Funciona por medio de una API que envia la información de la bd desde el backend al frontend.
+Aplicación web de tareas hecho con python flask y sqlite. Se ejecuta el app.py de /backend primero y despues se abre el /frontend/index.html desde un servidor, que puede ser local o no. Funciona por medio de una API que envia la información de la bd desde el backend al frontend.
